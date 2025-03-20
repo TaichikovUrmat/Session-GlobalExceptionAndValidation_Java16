@@ -2,6 +2,7 @@ package peaksoft.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
@@ -12,17 +13,18 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Car {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private Long id;
-    private String marke;
-    private int  price;
-    private LocalDate dateOfMade;
-    private String driver;
-    private String typ;
+     Long id;
+     String marke;
+     int  price;
+     LocalDate dateOfMade;
+     String driver;
+     String typ;
 
 
     @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)

@@ -27,13 +27,13 @@ public class CarApi {
             @RequestBody @Valid AddCarRequest addCarRequest) {
         return carService.save(autoSalonId, addCarRequest);
     }
-
+    @Secured("OWNER")
     @GetMapping("/getAllCars")
     public List<GetAllCarResponse> getAllCars() {
         return carService.fintAll();
     }
 
-
+    @Secured("OWNER")
     @PutMapping("/update/{id}/{idAuto}")
     public SimpleResponse update(
             @PathVariable("id") Long id,
@@ -41,17 +41,17 @@ public class CarApi {
             @RequestBody UpdateCarRequest updateCarRequest) {
         return carService.updateCar(id, idAuto, updateCarRequest);
     }
-
+    @Secured("OWNER")
     @GetMapping("/findById/{id}")
     public Car findById(@PathVariable("id") Long id) {
         return carService.findById(id);
     }
-
+    @Secured("OWNER")
     @DeleteMapping("/delete_car/{di}")
     public SimpleResponse delete(@PathVariable Long id) {
         return carService.deleteById(id);
     }
-
+    @Secured("OWNER")
     @GetMapping("/findByName/{salonId}")
     public List<Car> findByName(@PathVariable Long salonId, @RequestParam String carMark) {
         return carService.findByCarName(salonId, carMark);

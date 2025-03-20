@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import peaksoft.dto.request.RegisterRequest;
-import peaksoft.dto.response.LoginRequest;
+import peaksoft.dto.request.LoginRequest;
+import peaksoft.dto.response.SingUpResponse;
 import peaksoft.service.AuthService;
 
 
@@ -20,7 +21,7 @@ public class AuthAPI {
 
     // sign-in
     @PostMapping("/sign-in")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request){
+    public SingUpResponse login(@RequestBody LoginRequest request){
        return authService.login(request);
     }
 

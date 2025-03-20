@@ -11,9 +11,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import peaksoft.config.jwt.JwtService;
 import peaksoft.dto.request.RegisterRequest;
-import peaksoft.dto.response.LoginRequest;
+import peaksoft.dto.request.LoginRequest;
+import peaksoft.dto.response.SingUpResponse;
 import peaksoft.entities.User;
+import peaksoft.exceptions.BadRequestException;
 import peaksoft.repo.UserRepo;
 import peaksoft.service.AuthService;
 
@@ -26,6 +29,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepo userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+
+    private final JwtService jwtService;
 
     @Override
     public ResponseEntity<?> registration(RegisterRequest request) {
@@ -49,31 +54,45 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<?> login(LoginRequest request) {
-        try {
-            Authentication authenticate = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.email(),
-                            request.password())
-
-            );
-            System.out.println("authenticate.getName() = " + authenticate.getName());
-
-            User user = userRepository.findByEmail(request.email())
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-            boolean matches = passwordEncoder.matches(request.password(), user.getPassword());
-
-            if (!matches) {
-                throw new BadCredentialsException("Incorrect password");
-            }
-            return ResponseEntity.ok(Map.of("message", "Welcome " + user.getName()));
-
-        }catch (BadCredentialsException | UsernameNotFoundException e) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", e.getMessage()));
+    public SingUpResponse login(LoginRequest request) {
+        User user = userRepository.findByUserEmail(request.email());
+        if(!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new BadRequestException("Invalid password");
         }
+        return SingUpResponse
+                .builder()
+                .token(jwtService.generateToken(user))
+                .email(user.getEmail())
+                .role(user.getRole())
+                .httpStatus(HttpStatus.OK)
+                .message("Login successful")
+                .build();
+
+
+//        try {
+//            Authentication authenticate = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(
+//                            request.email(),
+//                            request.password())
+//
+//            );
+//            System.out.println("authenticate.getName() = " + authenticate.getName());
+//
+//            User user = userRepository.findByEmail(request.email())
+//                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+//
+//            boolean matches = passwordEncoder.matches(request.password(), user.getPassword());
+//
+//            if (!matches) {
+//                throw new BadCredentialsException("Incorrect password");
+//            }
+//            return ResponseEntity.ok(Map.of("message", "Welcome " + user.getName()));
+//
+//        }catch (BadCredentialsException | UsernameNotFoundException e) {
+//            return ResponseEntity
+//                    .status(HttpStatus.UNAUTHORIZED)
+//                    .body(Map.of("message", e.getMessage()));
+//        }
     }
 
 

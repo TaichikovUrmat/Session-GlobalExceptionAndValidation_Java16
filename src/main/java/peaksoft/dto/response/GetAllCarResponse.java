@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class    GetAllCarResponse {
+public class  GetAllCarResponse {
     private Long carId;
     private String marka;
     private int price;
